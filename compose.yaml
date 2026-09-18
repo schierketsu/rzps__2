@@ -1,0 +1,39 @@
+services:
+  db:
+    build: ./db
+
+    container_name: postgres18
+
+    restart: always
+
+    shm_size: 128mb
+
+    environment:
+      POSTGRES_USER: postgres_admin
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: testdb
+      POSTGRES_INITDB_ARGS: "--locale-provider=icu --icu-locale=ru_RU.UTF-8"
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+
+  pinger:
+    image: db-pinger:1.0
+    container_name: db_pinger
+    restart: always
+    depends_on:
+      - db
+    env_file:
+      - ./pinger/.env
+
+volumes:
+  postgres_data:
